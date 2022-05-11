@@ -43,16 +43,16 @@ import zipkin2.storage.StorageComponent;
   ZipkinConfiguration.ThrottledStorageComponentEnhancer.class,
   ZipkinConfiguration.TracingStorageComponentEnhancer.class
 })
-public class ZipkinConfiguration {
-
+public class ZipkinConfiguration { // 所有 Zipkin 服务需要的 Bean 都在这个类里进行配置
+  // Collector 的采样率，默认100% 采样，可以通过 zipkin.collector.sample-rate 来设置采样率
   @Bean CollectorSampler traceIdSampler(@Value("${zipkin.collector.sample-rate:1.0}") float rate) {
     return CollectorSampler.create(rate);
   }
-
+  // Collector 的统计信息，默认实现为 ActuateCollectorMetrics
   @Bean CollectorMetrics metrics(MeterRegistry registry) {
     return new MicrometerCollectorMetrics(registry);
   }
-
+  // Zipkin 存储 trace 时的 self-trace 类，启用后会将 Zipkin的Storage 存储模块执行的trace 信息也采集进系统中
   @EnableConfigurationProperties(ZipkinStorageThrottleProperties.class)
   @ConditionalOnThrottledStorage
   static class ThrottledStorageComponentEnhancer implements BeanPostProcessor, BeanFactoryAware {
@@ -138,10 +138,21 @@ public class ZipkinConfiguration {
     @Override
     public boolean matches(ConditionContext condition, AnnotatedTypeMetadata ignored) {
       String storageType = condition.getEnvironment().getProperty("zipkin.storage.type");
-      if (storageType == null) return true;
+      if (storageType == null) return false;
       storageType = storageType.trim();
       if (storageType.isEmpty()) return true;
       return storageType.equals("mem");
+    }
+  }
+
+  static final class StorageTypeMysql implements Condition {
+    @Override
+    public boolean matches(ConditionContext condition, AnnotatedTypeMetadata ignored) {
+      String storageType = condition.getEnvironment().getProperty("zipkin.storage.type");
+      if (storageType == null) return true;
+      storageType = storageType.trim();
+      if (storageType.isEmpty()) return true;
+      return storageType.equals("mysql");
     }
   }
 }

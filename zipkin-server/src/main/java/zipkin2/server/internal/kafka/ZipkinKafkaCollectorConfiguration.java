@@ -53,7 +53,7 @@ public class ZipkinKafkaCollectorConfiguration { // makes simple type name uniqu
    * bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:}
    * }</pre>
    */
-  static final class KafkaBootstrapServersSet implements Condition {
+  static final class KafkaBootstrapServersSet implements Condition { // 当 KafkaBootstrapServersSet 条件满足时
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
       return !isEmpty(

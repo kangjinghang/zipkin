@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @param <T> type of the object to encode
  */
-public interface BytesEncoder<T> {
+public interface BytesEncoder<T> { // Span 的编码器，将 Span 编码成二进制，便于 sender 发送给 Zipkin
   Encoding encoding();
 
   int sizeInBytes(T input);

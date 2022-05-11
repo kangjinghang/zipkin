@@ -24,14 +24,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import zipkin2.server.internal.ZipkinConfiguration;
 import zipkin2.storage.StorageComponent;
 import zipkin2.storage.mysql.v1.MySQLStorage;
 
 @EnableConfigurationProperties(ZipkinMySQLStorageProperties.class)
 @ConditionalOnClass(MySQLStorage.class)
-@ConditionalOnProperty(name = "zipkin.storage.type", havingValue = "mysql")
+@ConditionalOnProperty(name = "zipkin.storage.type", havingValue = "mysql", matchIfMissing = true)
 @ConditionalOnMissingBean(StorageComponent.class)
 @Import(ZipkinSelfTracingMySQLStorageConfiguration.class)
 public class ZipkinMySQLStorageConfiguration {

@@ -50,7 +50,7 @@ import static zipkin2.Call.propagateIfFatal;
 
 @ConditionalOnProperty(name = "zipkin.collector.http.enabled", matchIfMissing = true)
 @ExceptionHandler(BodyIsExceptionMessage.class)
-public class ZipkinHttpCollector {
+public class ZipkinHttpCollector { // Zipkin 默认的 Collector 使用 http 协议里收集 Trace 信息，客户端调用 /api/v1/spans 或/ api/v2/spans 来上报 trace 信息
   static final Logger LOGGER = LoggerFactory.getLogger(ZipkinHttpCollector.class);
   static volatile CollectorMetrics metrics;
   final Collector collector;
@@ -72,7 +72,7 @@ public class ZipkinHttpCollector {
   @Post("/api/v2/spans")
   @ConsumesJson
   public HttpResponse uploadSpansJson(ServiceRequestContext ctx, HttpRequest req) {
-    return validateAndStoreSpans(SpanBytesDecoder.JSON_V2, ctx, req);
+    return validateAndStoreSpans(SpanBytesDecoder.JSON_V2, ctx, req); // 调用 validateAndStoreSpans 方法校验并存储Span
   }
 
   @Post("/api/v2/spans")
@@ -151,7 +151,7 @@ public class ZipkinHttpCollector {
         // callback is context aware to continue the trace.
         Executor executor = ctx.makeContextAware(ctx.blockingTaskExecutor());
         try {
-          collector.acceptSpans(nioBuffer, decoder, result, executor);
+          collector.acceptSpans(nioBuffer, decoder, result, executor); // 调用 collector 的 acceptSpans 方法
         } catch (Throwable t1) {
           result.onError(t1);
           return null;
@@ -238,7 +238,7 @@ final class UnzippingBytesRequestConverter {
     ZipkinHttpCollector.metrics.incrementMessages();
     String encoding = request.headers().get(HttpHeaderNames.CONTENT_ENCODING);
     HttpData content = request.content();
-    if (!content.isEmpty() && encoding != null && encoding.contains("gzip")) {
+    if (!content.isEmpty() && encoding != null && encoding.contains("gzip")) { // 当请求数据为 gzip 格式，会先解压缩
       content = StreamDecoderFactory.gzip().newDecoder(ctx.alloc()).decode(content);
       // The implementation of the armeria decoder is to return an empty body on failure
       if (content.isEmpty()) {

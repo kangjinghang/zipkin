@@ -122,7 +122,7 @@ public class Collector { // not final for mock
     }
     metrics.incrementSpans(spans.size());
 
-    List<Span> sampledSpans = sample(spans);
+    List<Span> sampledSpans = sample(spans); // 需要采样的 Span 过滤出来
     if (sampledSpans.isEmpty()) {
       callback.onSuccess(null);
       return;
@@ -146,12 +146,12 @@ public class Collector { // not final for mock
     Executor executor) {
     List<Span> spans;
     try {
-      spans = decoder.decodeList(encoded);
+      spans = decoder.decodeList(encoded); // 先将传入的二进制数据转换成 Span对象
     } catch (RuntimeException | Error e) {
       handleDecodeError(e, callback);
       return;
     }
-    accept(spans, callback, executor);
+    accept(spans, callback, executor); // 调用 accept 方法
   }
 
   /**
@@ -198,7 +198,7 @@ public class Collector { // not final for mock
   }
 
   void store(List<Span> sampledSpans, Callback<Void> callback) {
-    storage.spanConsumer().accept(sampledSpans).enqueue(callback);
+    storage.spanConsumer().accept(sampledSpans).enqueue(callback); // 调用 storage 的 accept 方法，Zipkin 默认会使用 InMemoryStorage 来存储。
   }
 
   String idString(Span span) {

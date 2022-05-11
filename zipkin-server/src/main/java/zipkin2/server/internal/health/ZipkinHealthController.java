@@ -31,7 +31,7 @@ import static zipkin2.server.internal.ZipkinHttpConfiguration.MEDIA_TYPE_ACTUATO
 import static zipkin2.server.internal.health.ComponentHealth.STATUS_DOWN;
 import static zipkin2.server.internal.health.ComponentHealth.STATUS_UP;
 
-public class ZipkinHealthController {
+public class ZipkinHealthController { // Zipkin 健康自检的类
   final List<Component> components;
 
   ZipkinHealthController(List<Component> components) {

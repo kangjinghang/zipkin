@@ -39,7 +39,7 @@ import zipkin2.server.internal.banner.ZipkinBanner;
 @SpringBootConfiguration
 @EnableAutoConfiguration
 @EnableZipkinServer
-public class ZipkinServer {
+public class ZipkinServer { // java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 ./zipkin-server/target/zipkin-server-*exec.jar --STORAGE_TYPE=mysql --MYSQL_USER=root --MYSQL_PASS=123456
   static {
     SLF4JBridgeHandler.removeHandlersForRootLogger();
     SLF4JBridgeHandler.install();

@@ -204,9 +204,9 @@ public final class KafkaCollector extends CollectorComponent {
       + ", topic=" + kafkaWorkers.builder.topic
       + "}";
   }
-
+  // 启动了一个守护线程来运行 KafkaCollector 的 start 方法，避免 zookeeper 连不上，阻塞 Zipkin 的启动过程
   static final class LazyKafkaWorkers {
-    final int streams;
+    final int streams; // 线程池大小可以由参数 streams（即zipkin.collector.kafka.streams）来指定
     final Builder builder;
     final AtomicReference<CheckResult> failure = new AtomicReference<>();
     final CopyOnWriteArrayList<KafkaCollectorWorker> workers = new CopyOnWriteArrayList<>();

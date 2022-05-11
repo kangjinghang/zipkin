@@ -54,7 +54,7 @@ import static com.linecorp.armeria.common.MediaType.ANY_TEXT_TYPE;
 
 @ConditionalOnProperty(name = "zipkin.query.enabled", matchIfMissing = true)
 @ExceptionHandler(BodyIsExceptionMessage.class)
-public class ZipkinQueryApiV2 {
+public class ZipkinQueryApiV2 { // Zipkin V2 版本的查询API都在这个 Controller 中
   final String storageType;
   final StorageComponent storage; // don't cache spanStore here as it can cause the app to crash!
   final long defaultLookback;
@@ -80,7 +80,7 @@ public class ZipkinQueryApiV2 {
     this.namesMaxAge = namesMaxAge;
     this.autocompleteKeys = autocompleteKeys;
   }
-
+  // 查看所有 trace 的依赖关系
   @Get("/api/v2/dependencies")
   @Blocking
   public AggregatedHttpResponse getDependencies(
@@ -90,7 +90,7 @@ public class ZipkinQueryApiV2 {
       storage.spanStore().getDependencies(endTs, lookback.orElse(defaultLookback));
     return jsonResponse(DependencyLinkBytesEncoder.JSON_V1.encodeList(call.execute()));
   }
-
+  // 查看所有的 services
   @Get("/api/v2/services")
   @Blocking
   public AggregatedHttpResponse getServiceNames(ServiceRequestContext ctx) throws IOException {
@@ -98,7 +98,7 @@ public class ZipkinQueryApiV2 {
     serviceCount = serviceNames.size();
     return maybeCacheNames(serviceCount > 3, serviceNames, ctx.alloc());
   }
-
+  // 根据 serviceName 查询 spans 信息
   @Get("/api/v2/spans")
   @Blocking
   public AggregatedHttpResponse getSpanNames(
@@ -117,7 +117,7 @@ public class ZipkinQueryApiV2 {
       storage.serviceAndSpanNames().getRemoteServiceNames(serviceName).execute();
     return maybeCacheNames(serviceCount > 3, remoteServiceNames, ctx.alloc());
   }
-
+  // 根据 serviceName，spanName，annotationQuery，minDuration，maxDuration 等来搜索 traces 信息
   @Get("/api/v2/traces")
   @Blocking
   public AggregatedHttpResponse getTraces(
@@ -147,7 +147,7 @@ public class ZipkinQueryApiV2 {
     List<List<Span>> traces = storage.spanStore().getTraces(queryRequest).execute();
     return jsonResponse(writeTraces(SpanBytesEncoder.JSON_V2, traces));
   }
-
+  // 根据 traceId 查询某条 trace 信息
   @Get("/api/v2/trace/{traceId}")
   @Blocking
   public AggregatedHttpResponse getTrace(@Param("traceId") String traceId) throws IOException {

@@ -37,7 +37,7 @@ import zipkin2.collector.Collector;
 import zipkin2.collector.CollectorMetrics;
 
 /** Consumes spans from Kafka messages, ignoring malformed input */
-final class KafkaCollectorWorker implements Runnable {
+final class KafkaCollectorWorker implements Runnable { // 启动了一个守护线程来运行 KafkaCollector 的 start 方法，避免 zookeeper 连不上，阻塞 Zipkin 的启动过程
   static final Logger LOG = LoggerFactory.getLogger(KafkaCollectorWorker.class);
   static final Callback<Void> NOOP =
       new Callback<Void>() {
@@ -108,7 +108,7 @@ final class KafkaCollectorWorker implements Runnable {
               }
               collector.accept(Collections.singletonList(span), NOOP);
             } else {
-              collector.acceptSpans(bytes, NOOP);
+              collector.acceptSpans(bytes, NOOP); // 调用 Collector 的 acceptSpans 方法，即使用storage 组件来接收并存储 span 数据
             }
           }
         }
